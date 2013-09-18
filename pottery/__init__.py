@@ -1,1 +1,1 @@
-from _ottery import *
+from ottery import *

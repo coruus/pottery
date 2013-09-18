@@ -16,7 +16,7 @@ pottery.OtteryRandom.random is still, however, a full order-of-magnitude
 faster than random.SystemRandom.random on my machine
 
 (Note that, right now, maybe you shouldn't be using this at all, both
-because, to quote from https://github.com/nmathewson/libottery :
+because, to quote from https://github.com/nmathewson/libottery:
 
     'DO YOU BEGIN TO GRASP THE TRUE MEANING OF "ALPHA"?',
 
@@ -83,7 +83,7 @@ def rand_range(high):
         # If `top` is less than or equal to UINT64_MAX
         return C.ottery_rand_range64(high)
     else:
-        raise random.randrange(0, high + 1)
+        return random.randrange(0, high + 1)
 
 
 def rand_uint32():
@@ -171,9 +171,9 @@ class OtteryRandom(python_random.Random):
 
 
 def _rand_buffer(size):
-    """Generate `size` random bytes in a _cffi_backend.buffer.
+    """Generate `size` random bytes in a `_cffi_backend.buffer`.
 
-       (This can be passed directly to, e.g., numpy.frombuffer, or used as
+       (This can be passed directly to, e.g., `numpy.frombuffer`, or used as
        input to another CFFI call. If you don't understand CFFI's garbage
        collection rules, don't use this.)
 
@@ -193,9 +193,6 @@ class _RandomBuffer(object):
 
        This is intended for uses which require so many random bytes that
        memory allocation is a significant cost.
-
-       TODO(dlg): Are there thread-safety issues thaat warrant creating
-       separate instances of libottery?
     """
 
     def __init__(self, size):
@@ -204,6 +201,7 @@ class _RandomBuffer(object):
         self._cdata = ffi.new('char[]', size)
         C.ottery_rand_bytes(self._cdata, size)
         self.buffer = ffi.buffer(self._cdata)
+        self.__buffer__ = self.buffer
 
     def refresh(self):
         """Refresh the random buffer in-place."""
