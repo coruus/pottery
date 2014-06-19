@@ -1,7 +1,9 @@
 """An implementation of random.Random using libottery.
 
 This file is just a stub that creates an instance of OtteryRandom and puts
-the expected functions into the namespace."""
+the expected functions into the namespace.
+"""
+# pylint: disable=invalid-name
 from __future__ import division, print_function
 
 from pottery._random import OtteryRandom
@@ -35,5 +37,5 @@ randrange = _OTTERY_INSTANCE.randrange
 __all__ = ('random', 'OtteryRandom', 'seed', 'random', 'uniform', 'triangular',
            'randint', 'choice', 'sample', 'shuffle', 'normalvariate',
            'lognormvariate', 'expovariate', 'vonmisesvariate', 'gammavariate',
-           'gauss', 'betavariate', 'paretovariate', 'weibullvariate', 'getstate',
-           'setstate', 'jumpahead', 'getrandbits', 'randrange')
+           'gauss', 'betavariate', 'paretovariate', 'weibullvariate',
+           'getstate', 'setstate', 'jumpahead', 'getrandbits', 'randrange')

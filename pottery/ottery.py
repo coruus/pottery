@@ -21,9 +21,11 @@ and because this module is thoroughly untested.)
 from __future__ import division, print_function
 
 from binascii import hexlify
+from math import log
 
 from cffi import FFI
 
+# cffi interface to ottery
 _FFI = FFI()
 _FFI.cdef("""\
   // ottery.h
@@ -85,12 +87,39 @@ def rand_uint64():
     return _C.ottery_rand_uint64()
 
 
+def _randrange64(lower, upper):
+    """Generate a random integer in (lower, upper).
+
+    The range must be less than UINT64_MAX.
+    """
+    span = upper - lower
+    return lower + _C.ottery_rand_range64(span)
+
+
 def getrandbits(bitlength):
     """Return a Python long with `k` random bits."""
     num_bytes = (bitlength + 7) // 8
     mask = 2 ** bitlength - 1
     s = rand_bytes(num_bytes)
     return mask & int(hexlify(s), 16)
+
+
+def _randbelow(upper):
+    """Return a Python long less than or equal to upper."""
+    bits = log(upper, 2)
+    candidate = getrandbits(bits)
+    while candidate > upper:
+        candidate = getrandbits(bits)
+    return candidate
+
+
+def randrange(lower, upper=None):
+    """Return a random number in a range."""
+    if upper is None:
+        lower, upper = 0, lower
+    span = upper - lower
+    return lower + (_randbelow(span) if span > (2 ** 64 - 1)
+                    else _randrange64(0, span))
 
 
 def _rand_buffer(size):
@@ -146,4 +175,4 @@ class _RandomBuffer(object):
                            self.size)
 
 __all__ = ('_rand_buffer', 'rand_bytes', 'rand_uint32',
-           'rand_uint64', '_RandomBuffer')
+           'rand_uint64', '_RandomBuffer', '_randrange64', 'randrange')

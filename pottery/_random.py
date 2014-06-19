@@ -1,4 +1,5 @@
 """An implementation of random.Random using libottery."""
+# pylint: disable=abstract-class-not-used,too-many-public-methods,no-self-use
 from __future__ import division, print_function
 
 from array import array
@@ -18,11 +19,10 @@ class OtteryRandom(python_random.Random):
 
     """Generates random numbers securely using libottery.
 
-       Reimplements integer methods to use random bytes
-       directly, rather than using int(random.random() * n).
+    Reimplements integer methods to use random bytes directly, rather than using
+    int(random.random() * n), which involves a conversion to binary64.
 
-       The Python code in this class has mainly been adapted
-       from PyPy.
+    The Python code in this class has mainly been adapted from PyPy.
     """
 
     VERSION = 3
@@ -32,6 +32,7 @@ class OtteryRandom(python_random.Random):
 
         Just sets up Gaussian state.
         """
+        # pylint: disable=super-init-not-called
         self.gauss_next = None
 
     def getstate(self):
@@ -53,11 +54,11 @@ class OtteryRandom(python_random.Random):
     def random(self):
         """Return a random float in the half-open interval [0, 1).
 
-           Copied from Python's _randommodule.c.
+        Copied from Python's _randommodule.c.
 
-           Returns
-           -------
-           x : float
+        Returns
+        -------
+        x : float
         """
         high, low = unpack('II', rand_bytes(8))
         high >>= 5
@@ -89,7 +90,6 @@ class OtteryRandom(python_random.Random):
 
         This function uss libottery.
         """
-
         # This code is a bit messy to make it fast for the
         # common case while still doing adequate error checking.
         istart = int(start)
@@ -132,12 +132,11 @@ class OtteryRandom(python_random.Random):
         return self.randrange(low, high + 1)
 
     def _randbelow(self, n, _flog=_log, iint=int):
-        """Return a random int in the range [0,n)
+        """Return a random int in the range [0,n).
 
         Handles the case where `n` has more bits than returned
         by a single call to the underlying generator.
         """
-
         bits = iint(1.00001 + _flog(n - 1, 2.0))  # 2**k > n-1 > 2**(k-2)
         x = getrandbits(bits)
         while x >= n:
@@ -162,7 +161,6 @@ class OtteryRandom(python_random.Random):
         ------
         ValueError if random != None
         """
-
         if random is None:
             raise ValueError("OtteryRandom does not support selecting an"
                              "alternative DRNG.")
@@ -172,7 +170,7 @@ class OtteryRandom(python_random.Random):
             x[i], x[j] = x[j], x[i]
 
     def sample(self, population, k):
-        """Chooses k unique random elements from a population sequence.
+        """Choose `k` unique random elements from a population sequence.
 
         Returns a new list containing elements from the population while
         leaving the original population unchanged.  The resulting list is
@@ -190,7 +188,6 @@ class OtteryRandom(python_random.Random):
 
         Uses libottery random integers.
         """
-
         # Sampling without replacement entails tracking either potential
         # selections (the pool) in a list or previous selections in a set.
 
@@ -200,7 +197,6 @@ class OtteryRandom(python_random.Random):
         # a larger number of selections, the pool tracking method is
         # preferred since the list takes less space than the
         # set and it doesn't suffer from frequent reselections.
-
         n = len(population)
         if not 0 <= k <= n:
             raise ValueError("sample larger than population")
